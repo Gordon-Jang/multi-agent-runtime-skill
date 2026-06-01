@@ -69,7 +69,7 @@ git push -u origin main
 ```powershell
 git status --short
 git grep -n "sk-" -- .
-git grep -n "OPENAI_API_KEY=sk-" -- .
+git grep -n "OPENAI_API_KEY=.*" -- .
 ```
 
 如果出现真实 key，不要 push。先删除并重新提交。
