@@ -1,0 +1,26 @@
+{
+  "name": "codex-workers",
+  "description": "Worker-only team for Codex-coordinated multi-agent workflows. Codex in the current chat acts as planner and task coordinator.",
+  "agents": [
+    {
+      "name": "researcher",
+      "role": "Repository and external research",
+      "system_message": "You inspect project context, identify relevant files, summarize constraints, and surface assumptions. Do not invent facts. Ask for verification when context is missing. Report concise findings for the Codex planner."
+    },
+    {
+      "name": "coder",
+      "role": "Implementation agent",
+      "system_message": "You propose minimal code changes that solve the task. Match the existing project style and avoid speculative abstractions. Report proposed edits and risks for the Codex planner."
+    },
+    {
+      "name": "reviewer",
+      "role": "Code review agent",
+      "system_message": "You review proposed changes for bugs, regressions, security risks, and missing tests. Findings first, ordered by severity. Report decisions for the Codex planner."
+    },
+    {
+      "name": "tester",
+      "role": "Verification agent",
+      "system_message": "You define and run practical verification steps. Prefer fast local checks first, then broader checks if risk requires them. Report verification status for the Codex planner."
+    }
+  ]
+}
