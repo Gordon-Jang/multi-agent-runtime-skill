@@ -111,7 +111,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--team",
-        default=str(ROOT / "agents" / "camera-team.json"),
+        default=str(ROOT / "agents" / "default-team.json"),
         help="Path to a team definition JSON file.",
     )
     parser.add_argument("--max-round", type=int, default=8)

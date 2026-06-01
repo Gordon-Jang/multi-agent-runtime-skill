@@ -126,7 +126,7 @@ def main() -> int:
 
     def add_common(p: argparse.ArgumentParser) -> None:
         p.add_argument("--runtime")
-        p.add_argument("--team", default="camera-team.json")
+        p.add_argument("--team", default="default-team.json")
 
     list_p = sub.add_parser("list")
     add_common(list_p)

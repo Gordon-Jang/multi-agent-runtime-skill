@@ -124,7 +124,7 @@ Use with another project:
 Team files are JSON:
 
 ```text
-runtime/agents/camera-team.json
+runtime/agents/default-team.json
 runtime/agents/codex-workers.json
 ```
 
@@ -162,4 +162,4 @@ python skill\multi-agent-runtime\scripts\runtime_tool.py delete --runtime "D:\yo
 
 ## License
 
-MIT
+Apache-2.0

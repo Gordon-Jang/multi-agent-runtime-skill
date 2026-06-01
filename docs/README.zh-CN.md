@@ -130,7 +130,7 @@ Worker-only 模式：当前 Codex 对话负责规划，后台只运行 worker ag
 团队文件位于：
 
 ```text
-runtime/agents/camera-team.json
+runtime/agents/default-team.json
 runtime/agents/codex-workers.json
 ```
 
@@ -169,4 +169,4 @@ python skill\multi-agent-runtime\scripts\runtime_tool.py delete --runtime "D:\�
 
 ## 许可证
 
-MIT
+Apache-2.0

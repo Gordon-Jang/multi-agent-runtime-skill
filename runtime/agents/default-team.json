@@ -1,5 +1,5 @@
 {
-  "name": "camera-team",
+  "name": "default-team",
   "description": "Portable multi-agent software team for code research, implementation review, testing, and documentation.",
   "agents": [
     {

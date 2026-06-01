@@ -61,7 +61,7 @@ Team files live at `agents/<team-name>.json` and contain:
 
 ```json
 {
-  "name": "camera-team",
+  "name": "default-team",
   "description": "Portable multi-agent software team.",
   "agents": [
     {
