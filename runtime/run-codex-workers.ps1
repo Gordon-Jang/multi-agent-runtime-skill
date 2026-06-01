@@ -11,6 +11,6 @@ $ErrorActionPreference = "Stop"
 
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 if (-not $Workspace) {
-    $Workspace = Split-Path -Parent $Root
+    $Workspace = (Get-Location).Path
 }
 & "$Root\.venv\Scripts\python.exe" "$Root\run_team.py" $Goal --workspace $Workspace --team "$Root\agents\codex-workers.json" --max-round $MaxRound

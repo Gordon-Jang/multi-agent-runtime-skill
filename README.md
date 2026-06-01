@@ -2,15 +2,16 @@
 
 English | [中文](docs/README.zh-CN.md)
 
-This repository contains a Codex skill and a small AutoGen runtime for local multi-agent workflows.
+This repository contains a Codex skill and a small AutoGen runtime for local multi-agent workflows. The runtime is installed under the Codex home directory, not inside each project.
 
 Core idea:
 
 ```text
 User
   -> Current Codex chat as planner/coordinator
-  -> Worker agents in runtime:
+  -> Worker agents in %USERPROFILE%\.codex\multi-agent-runtime:
      researcher / coder / reviewer / tester
+  -> Project-local state in .codex-multi-agent/
 ```
 
 It also supports a full internal AutoGen team with an internal `planner` agent.
@@ -18,7 +19,7 @@ It also supports a full internal AutoGen team with an internal `planner` agent.
 ## Contents
 
 - A Codex skill: `skill/multi-agent-runtime`
-- A portable runtime: `runtime/`
+- A Codex-global runtime template: `runtime/`
 - API/model diagnostic scripts
 - Worker-only mode for Codex-coordinated tasks
 - Agent management: list, add, update, delete agents from team JSON files
@@ -36,7 +37,7 @@ It also supports a full internal AutoGen team with an internal `planner` agent.
 Clone this repository, then run:
 
 ```powershell
-.\install.ps1 -RuntimeTarget "D:\your-project\multi-agent-runtime"
+.\install.ps1
 ```
 
 The script installs the skill into:
@@ -45,14 +46,20 @@ The script installs the skill into:
 %USERPROFILE%\.codex\skills\multi-agent-runtime
 ```
 
-It also copies the runtime into the target project.
+It also copies the runtime into:
+
+```text
+%USERPROFILE%\.codex\multi-agent-runtime
+```
+
+Projects are not required to contain a runtime copy. When the runtime is called from a project, it creates project-local state under `.codex-multi-agent/`.
 
 Restart Codex after installing the skill.
 
 ## Configure Runtime
 
 ```powershell
-cd D:\your-project\multi-agent-runtime
+cd $env:USERPROFILE\.codex\multi-agent-runtime
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 Copy-Item .env.example .env
@@ -104,28 +111,28 @@ For Chinese:
 Worker-only mode:
 
 ```powershell
-.\run-codex-workers.ps1 -Goal "researcher inspect context, coder propose minimal changes, reviewer check risks, tester define verification"
+& "$env:USERPROFILE\.codex\multi-agent-runtime\run-codex-workers.ps1" -Goal "researcher inspect context, coder propose minimal changes, reviewer check risks, tester define verification"
 ```
 
 Full internal team mode:
 
 ```powershell
-.\run-team.ps1 -Goal "review this project and propose improvements"
+& "$env:USERPROFILE\.codex\multi-agent-runtime\run-team.ps1" -Goal "review this project and propose improvements"
 ```
 
 Use with another project:
 
 ```powershell
-.\run-codex-workers.ps1 -Goal "inspect this repo and create a test plan" -Workspace "D:\path\to\project"
+& "$env:USERPROFILE\.codex\multi-agent-runtime\run-codex-workers.ps1" -Goal "inspect this repo and create a test plan" -Workspace "D:\path\to\project"
 ```
 
 ## Agent Files
 
-Team files are JSON:
+Global team files are JSON:
 
 ```text
-runtime/agents/default-team.json
-runtime/agents/codex-workers.json
+%USERPROFILE%\.codex\multi-agent-runtime\agents\default-team.json
+%USERPROFILE%\.codex\multi-agent-runtime\agents\codex-workers.json
 ```
 
 Fields:
@@ -147,10 +154,10 @@ Replace:
 ## Agent Management
 
 ```powershell
-python skill\multi-agent-runtime\scripts\runtime_tool.py list --runtime "D:\your-project\multi-agent-runtime"
-python skill\multi-agent-runtime\scripts\runtime_tool.py add --runtime "D:\your-project\multi-agent-runtime" --name security-reviewer --role "Security review agent" --system-message "Review changes for security risks and data exposure."
-python skill\multi-agent-runtime\scripts\runtime_tool.py update --runtime "D:\your-project\multi-agent-runtime" --name tester --role "Verification agent" --system-message "Define practical verification steps."
-python skill\multi-agent-runtime\scripts\runtime_tool.py delete --runtime "D:\your-project\multi-agent-runtime" --name security-reviewer
+python skill\multi-agent-runtime\scripts\runtime_tool.py list --runtime "$env:USERPROFILE\.codex\multi-agent-runtime"
+python skill\multi-agent-runtime\scripts\runtime_tool.py add --runtime "$env:USERPROFILE\.codex\multi-agent-runtime" --name security-reviewer --role "Security review agent" --system-message "Review changes for security risks and data exposure."
+python skill\multi-agent-runtime\scripts\runtime_tool.py update --runtime "$env:USERPROFILE\.codex\multi-agent-runtime" --name tester --role "Verification agent" --system-message "Define practical verification steps."
+python skill\multi-agent-runtime\scripts\runtime_tool.py delete --runtime "$env:USERPROFILE\.codex\multi-agent-runtime" --name security-reviewer
 ```
 
 ## Security

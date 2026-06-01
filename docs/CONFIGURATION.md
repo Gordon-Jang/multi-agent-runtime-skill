@@ -2,7 +2,7 @@
 
 ## Runtime Environment
 
-Create `runtime/.env` from `runtime/.env.example`.
+Create `%USERPROFILE%\.codex\multi-agent-runtime\.env` from `.env.example` after installation.
 
 Do not commit `.env`.
 
@@ -47,10 +47,11 @@ The skill looks for the runtime in this order:
 
 1. Explicit `--runtime <path>`
 2. `MULTI_AGENT_RUNTIME` environment variable
-3. `multi-agent-runtime/run_team.py` under the current workspace or parent directories
+3. `%USERPROFILE%\.codex\multi-agent-runtime`
+4. `multi-agent-runtime/run_team.py` under the current workspace or parent directories
 
 PowerShell example:
 
 ```powershell
-$env:MULTI_AGENT_RUNTIME="D:\your-project\multi-agent-runtime"
+$env:MULTI_AGENT_RUNTIME="$env:USERPROFILE\.codex\multi-agent-runtime"
 ```

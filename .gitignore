@@ -4,5 +4,6 @@ __pycache__/
 *.pyc
 runs/
 projects/*.local.md
+.codex-multi-agent/
 .DS_Store
 Thumbs.db

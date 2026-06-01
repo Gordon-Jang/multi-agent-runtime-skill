@@ -14,22 +14,35 @@ def load_team(path: Path) -> dict:
         return json.load(handle)
 
 
-def build_context(workspace: Path) -> str:
+def ensure_project_state(workspace: Path) -> Path:
+    state_dir = workspace / ".codex-multi-agent"
+    (state_dir / "runs").mkdir(parents=True, exist_ok=True)
+    return state_dir
+
+
+def build_context(workspace: Path, state_dir: Path) -> str:
     files = []
-    for candidate in ["README.md", "package.json", "pyproject.toml", "requirements.txt"]:
+    for candidate in [
+        "README.md",
+        "package.json",
+        "pyproject.toml",
+        "requirements.txt",
+        ".codex-multi-agent/context.md",
+    ]:
         target = workspace / candidate
         if target.exists():
             files.append(f"- {candidate}")
     return (
         f"Workspace: {workspace}\n"
+        f"Project state: {state_dir}\n"
         f"Detected context files:\n" + ("\n".join(files) if files else "- none")
     )
 
 
-def dry_run(team: dict, goal: str, workspace: Path) -> None:
+def dry_run(team: dict, goal: str, workspace: Path, state_dir: Path) -> None:
     print("Multi-agent runtime is deployed.")
     print(f"Team: {team['name']}")
-    print(build_context(workspace))
+    print(build_context(workspace, state_dir))
     print("\nPlanned agent chain:")
     for agent in team["agents"]:
         print(f"- {agent['name']}: {agent['role']}")
@@ -38,7 +51,7 @@ def dry_run(team: dict, goal: str, workspace: Path) -> None:
     print("\nDry run only: set OPENAI_API_KEY in .env, then run without --dry-run.")
 
 
-def run_autogen(team: dict, goal: str, workspace: Path, max_round: int) -> None:
+def run_autogen(team: dict, goal: str, workspace: Path, state_dir: Path, max_round: int) -> None:
     try:
         import autogen
     except ImportError as exc:
@@ -88,7 +101,7 @@ def run_autogen(team: dict, goal: str, workspace: Path, max_round: int) -> None:
     )
     manager = autogen.GroupChatManager(groupchat=groupchat, llm_config=llm_config)
     prompt = (
-        f"{build_context(workspace)}\n\n"
+        f"{build_context(workspace, state_dir)}\n\n"
         f"User goal:\n{goal}\n\n"
         "Coordinate as a portable software team. End with concrete next actions and verification."
     )
@@ -106,8 +119,8 @@ def main() -> None:
     parser.add_argument("goal", help="Task for the agent team.")
     parser.add_argument(
         "--workspace",
-        default=str(ROOT.parent),
-        help="Project path the team should reason about. Defaults to this repository.",
+        default=os.getcwd(),
+        help="Project path the team should reason about. Defaults to the caller's current directory.",
     )
     parser.add_argument(
         "--team",
@@ -120,12 +133,13 @@ def main() -> None:
 
     load_dotenv(ROOT / ".env")
     workspace = Path(args.workspace).resolve()
+    state_dir = ensure_project_state(workspace)
     team = load_team(Path(args.team).resolve())
 
     if args.dry_run:
-        dry_run(team, args.goal, workspace)
+        dry_run(team, args.goal, workspace, state_dir)
     else:
-        run_autogen(team, args.goal, workspace, args.max_round)
+        run_autogen(team, args.goal, workspace, state_dir, args.max_round)
 
 
 if __name__ == "__main__":

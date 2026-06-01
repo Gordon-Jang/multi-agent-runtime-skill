@@ -2,7 +2,7 @@
 
 ## 运行时环境
 
-从 `runtime/.env.example` 创建 `runtime/.env`。
+安装后，从 `%USERPROFILE%\.codex\multi-agent-runtime\.env.example` 创建 `%USERPROFILE%\.codex\multi-agent-runtime\.env`。
 
 不要提交 `.env`。
 
@@ -47,10 +47,11 @@ AUTOGEN_PRICE_COMPLETION_1K=0
 
 1. 显式传入 `--runtime <path>`
 2. 环境变量 `MULTI_AGENT_RUNTIME`
-3. 当前 workspace 或父目录下的 `multi-agent-runtime/run_team.py`
+3. `%USERPROFILE%\.codex\multi-agent-runtime`
+4. 当前 workspace 或父目录下的 `multi-agent-runtime/run_team.py`
 
 PowerShell 示例：
 
 ```powershell
-$env:MULTI_AGENT_RUNTIME="D:\your-project\multi-agent-runtime"
+$env:MULTI_AGENT_RUNTIME="$env:USERPROFILE\.codex\multi-agent-runtime"
 ```

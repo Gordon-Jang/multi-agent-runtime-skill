@@ -9,6 +9,11 @@ def default_runtime() -> Optional[Path]:
     env_value = os.getenv("MULTI_AGENT_RUNTIME")
     if env_value:
         return Path(env_value).resolve()
+    home = os.getenv("USERPROFILE") or os.getenv("HOME")
+    if home:
+        codex_global = Path(home) / ".codex" / "multi-agent-runtime"
+        if (codex_global / "run_team.py").exists():
+            return codex_global.resolve()
     cwd = Path.cwd()
     for directory in [cwd, *cwd.parents]:
         nested = directory / "multi-agent-runtime" / "run_team.py"

@@ -49,7 +49,6 @@ def main() -> int:
             temperature=0,
             max_tokens=8,
         )
-        text = response.choices[0].message.content
     except Exception as exc:
         print("\nResult: API check failed")
         print(f"- {type(exc).__name__}: {exc}")
@@ -58,6 +57,15 @@ def main() -> int:
         print("- Confirm AUTOGEN_MODEL is a model name supported by that gateway.")
         print("- If you use a local proxy, ensure PowerShell can reach it.")
         return 1
+
+    if isinstance(response, str):
+        text = response
+    elif hasattr(response, "choices") and response.choices:
+        choice = response.choices[0]
+        message = getattr(choice, "message", None)
+        text = getattr(message, "content", None) or getattr(choice, "text", None) or str(response)
+    else:
+        text = str(response)
 
     print("\nResult: API check passed")
     print(f"- Reply: {text}")

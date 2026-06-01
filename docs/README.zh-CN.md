@@ -2,15 +2,16 @@
 
 [English](../README.md) | 中文
 
-本仓库包含一个 Codex skill 和一个轻量 AutoGen 运行时，用于本地多 agent 工作流。
+本仓库包含一个 Codex skill 和一个轻量 AutoGen 运行时，用于本地多 agent 工作流。运行时安装在 Codex 全局目录，不需要复制到每个项目。
 
 核心结构：
 
 ```text
 用户
   -> 当前 Codex 对话担任 planner / coordinator
-  -> 后台 worker agents:
+  -> %USERPROFILE%\.codex\multi-agent-runtime 中的后台 worker agents:
      researcher / coder / reviewer / tester
+  -> 项目侧状态目录 .codex-multi-agent/
 ```
 
 同时也保留完整 AutoGen 团队模式，即运行时内部也包含 `planner` agent。
@@ -18,7 +19,7 @@
 ## 内容
 
 - Codex skill：`skill/multi-agent-runtime`
-- 可复制到任意项目的运行时：`runtime/`
+- Codex 全局运行时模板：`runtime/`
 - API key / base URL / 模型名诊断
 - 当前 Codex 对话担任 planner，后台只调用 worker agents
 - agent 管理：查看、新增、修改、删除 team JSON 中的 agent
@@ -36,7 +37,7 @@
 克隆仓库后运行：
 
 ```powershell
-.\install.ps1 -RuntimeTarget "D:\你的项目\multi-agent-runtime"
+.\install.ps1
 ```
 
 脚本会把 skill 安装到：
@@ -45,14 +46,20 @@
 %USERPROFILE%\.codex\skills\multi-agent-runtime
 ```
 
-同时把 runtime 复制到指定项目目录。
+同时把 runtime 复制到：
+
+```text
+%USERPROFILE%\.codex\multi-agent-runtime
+```
+
+项目目录不需要保存 runtime。调用运行时时，只会在目标项目下生成 `.codex-multi-agent/` 状态目录。
 
 安装后重启 Codex。
 
 ## 配置运行时
 
 ```powershell
-cd D:\你的项目\multi-agent-runtime
+cd $env:USERPROFILE\.codex\multi-agent-runtime
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 Copy-Item .env.example .env
@@ -110,28 +117,28 @@ Reply: OK
 Worker-only 模式：当前 Codex 对话负责规划，后台只运行 worker agents。
 
 ```powershell
-.\run-codex-workers.ps1 -Goal "researcher 分析上下文，coder 提出最小改动，reviewer 检查风险，tester 给出验证步骤"
+& "$env:USERPROFILE\.codex\multi-agent-runtime\run-codex-workers.ps1" -Goal "researcher 分析上下文，coder 提出最小改动，reviewer 检查风险，tester 给出验证步骤"
 ```
 
 完整团队模式：AutoGen 内部也包含 `planner`。
 
 ```powershell
-.\run-team.ps1 -Goal "review this project and propose improvements"
+& "$env:USERPROFILE\.codex\multi-agent-runtime\run-team.ps1" -Goal "review this project and propose improvements"
 ```
 
 迁移到其他项目：
 
 ```powershell
-.\run-codex-workers.ps1 -Goal "分析这个仓库并给出测试计划" -Workspace "D:\path\to\project"
+& "$env:USERPROFILE\.codex\multi-agent-runtime\run-codex-workers.ps1" -Goal "分析这个仓库并给出测试计划" -Workspace "D:\path\to\project"
 ```
 
 ## Agent 配置
 
-团队文件位于：
+全局团队文件位于：
 
 ```text
-runtime/agents/default-team.json
-runtime/agents/codex-workers.json
+%USERPROFILE%\.codex\multi-agent-runtime\agents\default-team.json
+%USERPROFILE%\.codex\multi-agent-runtime\agents\codex-workers.json
 ```
 
 agent 结构：
@@ -153,10 +160,10 @@ agent 结构：
 ## Agent 管理
 
 ```powershell
-python skill\multi-agent-runtime\scripts\runtime_tool.py list --runtime "D:\你的项目\multi-agent-runtime"
-python skill\multi-agent-runtime\scripts\runtime_tool.py add --runtime "D:\你的项目\multi-agent-runtime" --name security-reviewer --role "Security review agent" --system-message "Review changes for security risks and data exposure."
-python skill\multi-agent-runtime\scripts\runtime_tool.py update --runtime "D:\你的项目\multi-agent-runtime" --name tester --role "Verification agent" --system-message "Define practical verification steps."
-python skill\multi-agent-runtime\scripts\runtime_tool.py delete --runtime "D:\你的项目\multi-agent-runtime" --name security-reviewer
+python skill\multi-agent-runtime\scripts\runtime_tool.py list --runtime "$env:USERPROFILE\.codex\multi-agent-runtime"
+python skill\multi-agent-runtime\scripts\runtime_tool.py add --runtime "$env:USERPROFILE\.codex\multi-agent-runtime" --name security-reviewer --role "Security review agent" --system-message "Review changes for security risks and data exposure."
+python skill\multi-agent-runtime\scripts\runtime_tool.py update --runtime "$env:USERPROFILE\.codex\multi-agent-runtime" --name tester --role "Verification agent" --system-message "Define practical verification steps."
+python skill\multi-agent-runtime\scripts\runtime_tool.py delete --runtime "$env:USERPROFILE\.codex\multi-agent-runtime" --name security-reviewer
 ```
 
 ## 开源前检查
