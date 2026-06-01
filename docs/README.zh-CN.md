@@ -61,7 +61,7 @@ Copy-Item .env.example .env
 编辑 `.env`：
 
 ```env
-OPENAI_API_KEY=替换成你的key
+OPENAI_API_KEY=
 OPENAI_BASE_URL=https://api.openai.com/v1
 AUTOGEN_MODEL=gpt-4o-mini
 AUTOGEN_TEMPERATURE=0.2

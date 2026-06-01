@@ -61,7 +61,7 @@ Copy-Item .env.example .env
 Edit `.env`:
 
 ```env
-OPENAI_API_KEY=replace-with-your-key
+OPENAI_API_KEY=
 OPENAI_BASE_URL=https://api.openai.com/v1
 AUTOGEN_MODEL=gpt-4o-mini
 AUTOGEN_TEMPERATURE=0.2
